@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Car Rental</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, <span id="welcome-name"></span>!</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+
+        <h2>Available Cars</h2>
+        <table id="available-cars-table">
+            <thead>
+                <tr>
+                    <th>Car</th>
+                    <th>Type</th>
+                    <th>Year</th>
+                    <th>Rent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Available cars will load here -->
+            </tbody>
+        </table>
+
+        <h2>Your Rentals</h2>
+        <table id="rental-history-table">
+            <thead>
+                <tr>
+                    <th>Car</th>
+                    <th>Duration (days)</th>
+                    <th>From</th>
+                    <th>To</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- User rentals will load here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
