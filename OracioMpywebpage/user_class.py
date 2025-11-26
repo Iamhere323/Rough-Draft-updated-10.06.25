@@ -5,6 +5,7 @@ class User:
         self.user_id = user_id
         self.name = name
         self.email = email
+        self.password = password
         self.rentals = []
     
     def add_rental(self, rental):
