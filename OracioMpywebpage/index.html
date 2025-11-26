@@ -1,51 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Simple Car Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <h1>Car Rental System</h1>
 
-  <h1>Welcome to Simple Car Hub</h1>
+        <!-- Login Section -->
+        <div id="login-section">
+            <h2>Login</h2>
+            <input type="email" id="login-email" placeholder="Email">
+			<input type="password" id="login-password" placeholder="Password">
+            <button onclick="loginUser()">Login</button>
+        </div>
 
-  <!-- Navigation Tabs (Buttons) -->
-  <nav>
-    <button onclick="location.href='#home'">Home</button>
-    <button onclick="location.href='#create-account'">Create Account</button>
-    <button onclick="location.href='#cars'">Cars Listed</button>
-  </nav>
+        <!-- Register Section -->
+        <div id="register-section">
+            <h2>Register</h2>
+            <input type="text" id="register-name" placeholder="Name">
+            <input type="email" id="register-email" placeholder="Email">
+			<input type="password" id="register-password" placeholder="Password">
+            <button onclick="registerUser()">Register</button>
+        </div>
 
-  <hr>
+        <!-- Dashboard Section (hidden by default) -->
+        <div id="dashboard-section" style="display:none;">
+            <h2>Welcome, <span id="welcome-name"></span>!</h2>
+            <button onclick="logout()">Logout</button>
 
-  <!-- Home Section -->
-  <section id="home">
-    <h2>Home</h2>
-    <p>Welcome to our car listing site! Use the buttons above to navigate.</p>
-  </section>
+            <h3>Available Cars</h3>
+            <table id="available-cars-table">
+                <thead>
+                    <tr>
+                        <th>Car</th>
+                        <th>Type</th>
+                        <th>Year</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filled dynamically by script.js -->
+                </tbody>
+            </table>
 
-  <!-- Create Account Section -->
-  <section id="create-account">
-    <h2>Create Account</h2>
-    <p>Enter your name and email to create an account.</p>
-    <form>
-      <label>Name:</label><br>
-      <input type="text" name="name"><br><br>
-      <label>Email:</label><br>
-      <input type="email" name="email"><br><br>
-      <button type="submit">Submit</button>
-    </form>
-  </section>
+            <h3>Your Rentals</h3>
+            <table id="rental-history-table">
+                <thead>
+                    <tr>
+                        <th>Car</th>
+                        <th>Duration (days)</th>
+                        <th>From</th>
+                        <th>To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filled dynamically by script.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-  <!-- Cars Listed Section -->
-  <section id="cars">
-    <h2>Cars Listed</h2>
-    <ul>
-      <li>Toyota Corolla</li>
-      <li>Honda Civic</li>
-      <li>Ford Mustang</li>
-      <li>Tesla Model 3</li>
-    </ul>
-  </section>
-
+    <script src="script.js"></script>
 </body>
 </html>
-
