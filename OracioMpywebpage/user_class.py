@@ -1,7 +1,7 @@
 class User:
     """Class to represent a user account in the car rental system"""
     
-    def __init__(self, name, email, user_id=None):
+    def __init__(self, name, email, password, user_id=None):
         self.user_id = user_id
         self.name = name
         self.email = email
