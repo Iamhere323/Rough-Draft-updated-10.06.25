@@ -1,138 +1,182 @@
-from Car_class import *
-from CarInventory_class import *
-from Rental_class import *
-from user_class import *
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import json
+import webview
+from datetime import datetime, timedelta
+from Car_class import Car
+from CarInventory_class import CarInventory
+from Rental_class import Rental
+from user_class import User
 
-def load_inventory_from_file(filename, inventory):
-    try:
-        with open(filename, 'r') as file:
-            for line in file:
-                line = line.strip()
-                if not line or line.lower().startswith("car_id"):
-                    continue  # skip headers or empty lines
 
-                parts = line.split(',')
-                if len(parts) != 6:
-                    print(f"Skipping invalid line: {line}")
-                    continue
 
-                car_id, make, model, year, car_type, is_available = parts
+def get_data_folder():
+    folder = os.path.join(os.getenv('LOCALAPPDATA'), 'CarRentalApp')
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    return folder
 
-                try:
-                    car = Car(
-                        car_id=int(car_id),
-                        make=make,
-                        model=model,
-                        year=int(year),
-                        car_type=car_type,
-                        is_available=is_available.strip().lower() == 'true'
-                    )
-                    inventory.add_car(car)
-                except ValueError:
-                    print(f"Invalid data format in line: {line}")
+def save_json(filename, data):
+    path = os.path.join(get_data_folder(), filename)
+    with open(path, 'w') as f:
+        json.dump(data, f, indent=4)
 
-    except FileNotFoundError:
-        print(f"File not found: {filename}")
-
-def register_user(users_db):
-    print("\n--- Register New User ---")
-    name = input("Enter your name: ")
-    email = input("Enter your email: ").lower()
-    if email in users_db:
-        print("User with this email already exists. Try logging in.")
-        return None
-    user_id = len(users_db) + 1
-    user = User(name, email, user_id)
-    users_db[email] = user
-    print(" Registration successful!")
-    return user
-
-def login_user(users_db):
-    print("\n--- User Login ---")
-    email = input("Enter your email: ").lower()
-    user = users_db.get(email)
-    if user:
-        print(f" Welcome back, {user.name}!")
-        return user
-    else:
-        print("No user found with that email. Try registering.")
-        return None
-
-def rent_car_to_user(user, inventory):
-    inventory.view_available_cars()
-    car_id = input("\nEnter the ID of the car you want to rent: ")
-    try:
-        car_id = int(car_id)
-    except ValueError:
-        print("Invalid input. Please enter a number.")
-        return
-
-    car = inventory.rent_car(car_id)
-    if car:
+def load_json(filename, default=None):
+    path = os.path.join(get_data_folder(), filename)
+    if os.path.exists(path):
         try:
-            duration_days = int(input("How many days would you like to rent the car? "))
-            if duration_days <= 0:
-                print("Rental duration must be at least 1 day.")
-                return
-        except ValueError:
-            print("Invalid input. Please enter a valid number of days.")
-            return
+            with open(path, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return default if default is not None else []
+    return default if default is not None else []
 
+
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+class CarRentalAPI:
+    def __init__(self):
+        self.inventory = CarInventory()
+        self.users = self.load_users()
+        self.load_inventory_from_file(resource_path("List_of_Rental_Cars.txt"))
+
+    
+    def load_inventory_from_file(self, filename):
+        try:
+            with open(filename, 'r') as file:
+                for line in file:
+                    line = line.strip()
+                    if not line or line.lower().startswith("car_id"):
+                        continue
+                    parts = line.split(',')
+                    if len(parts) != 6:
+                        continue
+                    car_id, make, model, year, car_type, is_available = parts
+                    try:
+                        car = Car(
+                            car_id=int(car_id),
+                            make=make,
+                            model=model,
+                            year=int(year),
+                            car_type=car_type,
+                            is_available=is_available.strip().lower() == 'true'
+                        )
+                        self.inventory.add_car(car)
+                    except ValueError:
+                        continue
+        except FileNotFoundError:
+            print(f"File not found: {filename}")
+
+    
+    def load_users(self):
+        data = load_json("users.json", [])
+        users = {}
+        for u in data:
+            user = User(u["name"], u["email"], u["password"], u.get("user_id", 0))
+            user.rentals = []  # Load rentals if you want
+            users[u["email"]] = user
+        return users
+
+    def save_users(self):
+        data = []
+        for user in self.users.values():
+            data.append({
+                "name": user.name,
+                "email": user.email,
+				"password": user.password,
+                "user_id": user.user_id
+            })
+        save_json("users.json", data)
+
+    def register(self, name, password, email):
+        email = email.lower()
+        if email in self.users:
+            return {"success": False, "message": "User already exists. Please login."}
+
+        user_id = len(self.users) + 1
+        user = User(name, email, password, user_id)
+        self.users[email] = user
+        self.save_users()
+        return {"success": True, "message": f"User {name} registered successfully."}
+
+    
+    def login(self, email, password):
+	    email = email.lower()
+	    if email in self.users:
+	        user = self.users[email]
+	        if user.password == password:
+	            return {"success": True, "name": user.name}
+	        else:
+	            return {"success": False, "message": "Incorrect password."}
+	    return {"success": False, "message": "User not found. Please register."}
+
+    
+    def get_available_cars(self):
+        cars = []
+        for car in self.inventory.cars.values():
+            if car.is_available:
+                cars.append({
+                    "id": car.car_id,
+                    "make": car.make,
+                    "model": car.model,
+                    "year": car.year,
+                    "type": car.car_type
+                })
+        return cars
+
+    
+    def rent_car(self, car_id, email, duration_days):
+        email = email.lower()
+        if email not in self.users:
+            return {"success": False, "message": "User not found."}
+
+        try:
+            car_id = int(car_id)
+            duration_days = int(duration_days)
+        except ValueError:
+            return {"success": False, "message": "Invalid input."}
+
+        car = self.inventory.rent_car(car_id)
+        if not car:
+            return {"success": False, "message": "Car not available."}
+
+        user = self.users[email]
         rental = Rental(car_id, user, car, duration_days)
         user.add_rental(rental)
-        print(f"\n{user.name}, you successfully rented:\n  {rental}")
+        return {"success": True, "message": f"You successfully rented {car.make} {car.model} for {duration_days} days."}
 
-def user_menu(user, inventory):
-    while True:
-        print(f"\n--- Welcome, {user.name} ---")
-        print("1. View available cars")
-        print("2. Rent a car")
-        print("3. View my rental history")
-        print("4. View vehicles details")
-        print("5. Logout")
+    
+    def get_rentals(self, email):
+        email = email.lower()
+        if email not in self.users:
+            return []
+        user = self.users[email]
+        rentals = []
+        for rental in user.rentals:
+            rentals.append({
+                "car": f"{rental.car.make} {rental.car.model}",
+                "duration": rental.duration_days,
+                "from": rental.start_date.strftime("%Y-%m-%d"),
+                "to": rental.return_date.strftime("%Y-%m-%d")
+            })
+        return rentals
 
-        choice = input("Choose an option: ")
 
-        if choice == '1':
-            inventory.view_available_cars()
-        elif choice == '2':
-            rent_car_to_user(user, inventory)
-        elif choice == '3':
-            user.view_rentals()
-        elif choice == '4':
-            inventory.display_all_vehicles_with_details()
-        elif choice == '5':
-            print(f"Logged out {user.name}")
-            break
-        else:
-            print("Invalid choice. Please try again.")
-
-def main():
-    inventory = CarInventory()
-    load_inventory_from_file("List_of_Rental_Cars.txt", inventory)
-
-    users = {}
-
-    while True:
-        print("\n=== Car Rental System ===")
-        print("1. Login")
-        print("2. Register")
-        print("3. Exit")
-
-        choice = input("Choose an option: ")
-
-        if choice == '1':
-            user = login_user(users)
-            if user:
-                user_menu(user, inventory)
-        elif choice == '2':
-            user = register_user(users)
-            if user:
-                user_menu(user, inventory)
-        elif choice == '3':
-            print("Exiting system. Goodbye!")
-            break
-        else:
-            print("Invalid choice. Try again.")
-
-main()
+if __name__ == "__main__":
+    api = CarRentalAPI()
+    window = webview.create_window(
+        "Car Rental System",
+        resource_path("index.html"),
+        width=1000,
+        height=700,
+        resizable=True,
+        js_api=api
+    )
+    webview.start()
