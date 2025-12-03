@@ -6,11 +6,8 @@ Done:
 -created CI Pipeline with linting
 -created class to handle the renting of cars
 -create a "main.py" file to tie classes together for practical use
-
-
-Need to do:
--create class for payment of rentals
--
+-added password characteristic to login system
+-created simple front end local pc app
 
 Additional Features to add:
--
+-create class for payment of rentals
