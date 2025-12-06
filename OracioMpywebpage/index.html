@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+	<!---set encoding and loads our style.css file, also shows our title in the window -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+	<!--- wraps everything into a container for layout purposes-->
     <div class="container">
         <h1>Car Rental System</h1>
 
-        <!-- Login Section -->
+        <!-- Login Section = inputs email/password then the login button will trigger the api to login the user -->
         <div id="login-section">
             <h2>Login</h2>
             <input type="email" id="login-email" placeholder="Email">
@@ -18,7 +20,7 @@
             <button onclick="loginUser()">Login</button>
         </div>
 
-        <!-- Register Section -->
+        <!-- Register Section - similar to login section but also includes the name of the user and the register button will trigger the api to register the user -->
         <div id="register-section">
             <h2>Register</h2>
             <input type="text" id="register-name" placeholder="Name">
@@ -43,7 +45,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Filled dynamically by script.js -->
+                    <!-- Filled dynamically by JS since the available cars change whenever a user rents a car -->
                 </tbody>
             </table>
 
@@ -58,12 +60,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Filled dynamically by script.js -->
+                    <!-- Filled dynamically by JS since the rental history is subject change whenever a user decides to rent a car -->
                 </tbody>
             </table>
         </div>
     </div>
 
+	<!--- loads the JS frontend making the app interactive -->
     <script src="script.js"></script>
 </body>
 </html>
