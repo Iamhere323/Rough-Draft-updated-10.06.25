@@ -1,9 +1,10 @@
+ // Replace all non-ASCII characters with a "-"
 function sanitize(text) {
-    // Replace all non-ASCII characters with a standard dash
     return text.replace(/[^\x00-\x7F]/g, "-");
 }
 
-// User Login / Registration
+// User Login - gets email and password from index html then connect to python backend with pywebview
+// Success = saves user name and email to storage and shows the car dashboard
 async function loginUser() {
     const email = document.getElementById("login-email").value.trim().toLowerCase();
     const password = document.getElementById("login-password").value;
@@ -27,6 +28,8 @@ async function loginUser() {
     }
 }
 
+//similar to login function but will ask for all info(name, password, and email)
+//success = saving user information and showing car dashboard
 async function registerUser() {
     const name = document.getElementById("register-name").value.trim();
     const email = document.getElementById("register-email").value.trim().toLowerCase();
@@ -52,7 +55,7 @@ async function registerUser() {
     }
 }
 
-// Dashboard / View
+// hides login/register sections and shows the dashboard and loads avaiable cars and rental history for the user that is logged in
 function showDashboard() {
     document.getElementById("login-section").style.display = "none";
     document.getElementById("register-section").style.display = "none";
@@ -63,7 +66,7 @@ function showDashboard() {
     loadRentalHistory();
 }
 
-// Load Available Cars
+// inserts each available car into a row and adds a rent button next to them
 async function loadAvailableCars() {
     if (!window.pywebview || !window.pywebview.api) {
         setTimeout(loadAvailableCars, 100);
@@ -100,7 +103,7 @@ async function loadAvailableCars() {
     }
 }
 
-// Rent a Car
+//prompts user for rental duration then it will reload the car list and rental history
 async function rentCar(carId) {
     const duration = prompt("How many days do you want to rent this car?");
     if (!duration || isNaN(duration) || duration <= 0) {
@@ -129,7 +132,8 @@ async function rentCar(carId) {
     }
 }
 
-// Load Rental History
+//gets user rental history
+//adds a row in the rental history table for each rental
 async function loadRentalHistory() {
     const email = localStorage.getItem("userEmail");
     if (!email) return;
@@ -166,14 +170,13 @@ async function loadRentalHistory() {
     }
 }
 
-// Logout
+// Clears stored user info
 function logout() {
-    // Clear stored user info
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userName");
 	localStorage.removeItem("userPassword");
 
-    // Hide dashboard
+    // Hides dashboard
     document.getElementById("dashboard-section").style.display = "none";
 
     // Show login and register sections
@@ -187,3 +190,4 @@ function logout() {
     document.getElementById("register-email").value = "";
 	document.getElementById("register-password").value = "";
 }
+
