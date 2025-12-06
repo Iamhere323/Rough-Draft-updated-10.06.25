@@ -1,3 +1,4 @@
+/* sets font, sets window background color and text color*/
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f7fc;
@@ -6,6 +7,8 @@ body {
     padding: 0;
 }
 
+/* adds spacing, limits maximum width 
+padding inside so nothing touch the edges */
 .container {
     width: 90%;
     max-width: 1100px;
@@ -16,11 +19,12 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* makes headings blue */
 h1, h2 {
     color: #0056b3;
     margin-bottom: 15px;
 }
-
+ /* makes sure padding doesn't break the layout and allows input to span the full width of the container*/
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -32,6 +36,7 @@ input[type="password"] {
     box-sizing: border-box;
 }
 
+/* makes blue buttons with white text */
 button {
     padding: 10px 20px;
     background-color: #0056b3;
@@ -42,6 +47,7 @@ button {
     font-size: 16px;
 }
 
+/* adds hover effect(button darkens when you hover over it) on each button */
 button:hover {
     background-color: #00408c;
 }
@@ -55,6 +61,8 @@ button:hover {
     background-color: #c82333;
 }
 
+/* Buttons inside table cells are green (“Rent” buttons) with hover effect darkening them
+and the tables stretch to the full width of container */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -80,6 +88,7 @@ td button:hover {
     background-color: #218838;
 }
 
+/* added some different sizing for smaller screens(phones, tablets etc)*/
 @media screen and (max-width: 768px) {
     .container {
         width: 95%;
