@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!--- Wraps everything in a styled “box” same as the login/register page -->
     <div class="container">
+        <!-- gives a welcome to the user that logged in -->
         <h1>Welcome, <span id="welcome-name"></span>!</h1>
+        <!--- Triggers the api to logout and clears the stored user info and returns the user to the login/register view -->
         <button class="logout-btn" onclick="logout()">Logout</button>
 
         <h2>Available Cars</h2>
@@ -27,6 +30,7 @@
         </table>
 
         <h2>Your Rentals</h2>
+        <!--- Shows the user’s current and past rentals, JS populates all this -->
         <table id="rental-history-table">
             <thead>
                 <tr>
@@ -42,6 +46,9 @@
         </table>
     </div>
 
+    <!--- bridges the JS frontend to this so that the dashboard functions as we intend it-->
+    <!-- essentially this dashboard html is for display purposes since almost everything is filled dynamically through JS frontend-->
     <script src="script.js"></script>
 </body>
 </html>
+
